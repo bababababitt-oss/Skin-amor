@@ -14,16 +14,19 @@ jobs:
       - name: Preparar projeto
         run: |
           if [ -f build.gradle ]; then mkdir -p work && cp -r . work/SkinArmor 2>/dev/null || true; else mkdir -p work && unzip -q ./*.zip -d work; fi
-          ls work
-      - name: Baixar Gradle 2.14.1
+          cd work/SkinArmor
+          grep -q jitpack build.gradle || sed -i "s#mavenCentral()#mavenCentral()\n        maven { url = 'https://jitpack.io' }#" build.gradle
+          sed -i "s#net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT#com.github.GTNewHorizons:ForgeGradle:1.2.11#" build.gradle
+          cat build.gradle | head -15
+      - name: Baixar Gradle 4.4.1
         run: |
-          wget -q https://services.gradle.org/distributions/gradle-2.14.1-bin.zip
-          unzip -q gradle-2.14.1-bin.zip
+          wget -q https://services.gradle.org/distributions/gradle-4.4.1-bin.zip
+          unzip -q gradle-4.4.1-bin.zip
       - name: Compilar
         run: |
           cd work/SkinArmor
-          ../../gradle-2.14.1/bin/gradle setupCIWorkspace --no-daemon
-          ../../gradle-2.14.1/bin/gradle build --no-daemon
+          ../../gradle-4.4.1/bin/gradle setupCIWorkspace --no-daemon
+          ../../gradle-4.4.1/bin/gradle build --no-daemon
       - uses: actions/upload-artifact@v4
         with:
           name: SkinArmor-jar
